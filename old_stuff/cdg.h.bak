@@ -1,0 +1,212 @@
+#ifndef CDG_H
+#define CDG_H
+
+#include <stdlib.h>
+
+/*************************************************************************************/
+/* CDGNode - Holds info about a CDG Node                                             */
+/* @bid - Basic block id                                                             */
+/* @score - Metric used to represent the number of uncovered branches                */
+/* @expr - Predicate of decision statement, NULL for others                          */
+/* @trueNodeSet - Set of CDG nodes on the "true" evaluation side of current node     */
+/* @falseNodeSet - Set of CDG nodes on the "false" evaluation side of current node   */
+/* @parent - Parent of current node                                                  */
+/* @next - Next CDG node in the node list                                            */
+/*************************************************************************************/
+typedef struct CDGNode {
+  int bid;
+  int score;
+  char* expr;
+  struct CDGNode* trueNodeSet;
+  struct CDGNode* falseNodeSet;
+  struct CDGNode* parent;
+  struct CDGNode* next;        
+} CDGNode;
+
+/*****************************************************/
+/* getBID - Returns the basic block id of a CDG node */
+/* @node - CDG node                                  */
+/*****************************************************/
+int getBID(CDGNode* node);
+
+/**************************************************************************/
+/* setBID - Sets basic block id of CDG node and returns the same CDG node */
+/* @bid - Basic block id to set                                           */
+/**************************************************************************/
+CDGNode* setBID(CDGNode* node, int bid);
+
+/*****************************************************/
+/* getScore - Returns the score metric of a CDG node */
+/* @node - CDG Node                                  */
+/*****************************************************/
+int getScore(CDGNode* node);
+
+/********************************************************************/
+/* setScore - Sets the score metric value and returns same CDG node */
+/* @score - Score to set                                            */
+/********************************************************************/
+CDGNode* setScore(CDGNode* node, int score);
+
+/*****************************************************/
+/* getTrueNodeSet - Return trueNodeSet of a CDG node */
+/* @node - a CDG node                                */
+/*****************************************************/
+CDGNode* getTrueNodeSet(CDGNode* node);
+
+/*******************************************************/
+/* getFalseNodeSet - Return falseNodeSet of a CDG node */
+/* @node - a CDG node                                  */
+/*******************************************************/
+CDGNode* getFalseNodeSet(CDGNode* node);
+
+/***********************************************************************************/
+/* addTrueNode - Adds a CDG node to the trueNodeSet of a CDG node and returns the  */
+/*               node to whose trueNodeSet the node was added                      */
+/* @node - CDG Node to whose trueNodeSet the node is to be added                   */
+/* @trueNode - The CDG node to be added                                            */
+/***********************************************************************************/
+CDGNode* addTrueNode(CDGNode* node, CDGNode* trueNode);
+
+/*************************************************************************************/
+/* addFalseNode - Adds a CDG node to the falseNodeSet of a CDG node and returns the  */
+/*                node to whose falseNodeSet the node was added                      */
+/* @node - CDG Node to whose falseNodeSet the node is to be added                    */
+/* @falseNode - The CDG node to be added                                             */
+/*************************************************************************************/
+CDGNode* addFalseNode(CDGNode* node, CDGNode* falseNode);
+
+/*************************************************/
+/* getParent - Returns parent node of a CDG node */
+/* @node - CDG node                              */
+/*************************************************/
+CDGNode* getParent(CDGNode* node);
+
+/*******************************************************************/
+/* setParent - Sets the parent of a CDG node and returns that node */
+/* @node - The node whose parent is to be set                      */
+/* @parentNode - The parent node                                   */
+/*******************************************************************/
+CDGNode* setParent(CDGNode* node, CDGNode* parentNode);
+
+/*****************************************************************/
+/* getNextNodeInSet - Returns next CDG node in same set of nodes */
+/* @node - The node whose next node is to be returned            */
+/*****************************************************************/
+CDGNode* getNextNodeInSet(CDGNode* node);
+
+/******************************************************************************/
+/* newNode - Creates and return a new CDG Node with 0 and NULL assigned to    */
+/*           respective members of node                                       */
+/******************************************************************************/
+CDGNode* newBlankNode();
+
+CDGNode* newNode();
+
+/*****************************************************************************/
+/* deleteNode    - Deallocates the memory allocated to node and its members  */
+/*                 Traverses and recursively deallocates memory allocated to */
+/*                 - trueNodeSet                                             */
+/*                 - falseNodeSet                                            */
+/*                 - next                                                    */
+/*****************************************************************************/
+void deleteNode(CDGNode* node);
+
+/***********************************************************************************/
+/* updateScore - Sets the score of node to the max of sum of scores of trueNodeSet */
+/*               and falseNodeSet                                                  */
+/*               This function assumes that scores of all nodes in trueNodeSet and */
+/*               falseNodeSets are already updated                                 */
+/*             - Returns the same CDG node                                         */
+/* @node - a CDG node                                                              */
+/***********************************************************************************/
+CDGNode* updateScore(CDGNode* node);
+
+/*********************************************************************************/
+/* updateCDG - Updates the score of all the nodes of a tree rooted at the 'node' */
+/*             using updateScore function by traversing in bottom-up fashion     */
+/*           - Returns the same CDG node                                         */
+/* @node - a CDG node                                                            */
+/*********************************************************************************/
+CDGNode* updateCDG(CDGNode* node);
+
+typedef struct CDGPathNode {
+  int id;
+  char* expr;
+  CDGPathNode* next;
+} CDGPathNode;
+
+int getPathNodeID(CDGPathNode* node);
+CDGPathNode* getNextPathNode(CDGPathNode* node);
+
+typedef struct CDGPathList {
+  CDGPathNode* node;
+  CDGPathList* next;
+} CDGPathList;
+
+CDGPathNode* getPathNode(CDGPathList* list);
+CDGPathList* getNextPath(CDGPathList* list);
+
+/*********************************************************************************/
+/* CDGNodeList - List of CDG nodes - To be used as path or some traversal of CDG */
+/* @node - CDG Node                                                              */
+/* @next - Next CDG Node in list                                                 */
+/*********************************************************************************/
+typedef struct CDGNodeList {
+  struct CDGNode* node;
+  struct CDGNodeList* next;
+} CDGNodeList;
+
+/***************************************************************************************/
+/* getNextOfNodeList - Returns next CDG node list element of current node list element */
+/* @nodeList - Current node list element                                               */
+/***************************************************************************************/
+CDGNodeList* getNextOfNodeList(CDGNodeList* nodeList);
+
+/**********************************************************************************/
+/* getNodeOfNodeList - Extracts and returns the CDG node from a node list element */
+/* @nodeList - Current node list element                                          */
+/**********************************************************************************/
+CDGNode* getNodeOfNodeList(CDGNodeList* nodeList);
+
+/*****************************************************************/
+/* deleteNodeList - Deallocates memory allocated to path list    */
+/* @pathList - a path list                                       */
+/*****************************************************************/
+void deleteNodeList(CDGNodeList* nodeList);
+
+/************************************************************/
+/* CDGPathList - List of CDG paths                          */
+/* @path - a single path represented as a list of CDG nodes */
+/* @next - next path                                        */
+/************************************************************/
+typedef struct CDGPathList {
+  struct CDGNodeList* path;
+  struct CDGPathList* next;
+} CDGPathList;
+
+/***************************************************************************************/
+/* getNextOfPathList - Returns next CDG path list element of current path list element */
+/* @pathList - Current path list element                                               */
+/***************************************************************************************/
+CDGPathList* getNextOfPathList(CDGPathList* pathList);
+
+/*******************************************************************************************/
+/* getNodeListOfPathList - Extracts and returns the CDG node list from a path list element */
+/* @pathList - Current path list element                                                   */
+/*******************************************************************************************/
+CDGNodeList* getNodeListOfPathList(CDGPathList* pathList);
+
+/***************************************************************/
+/* getTopPaths - Returns list of score-wise top paths of a CDG */
+/* @node - a CDG node                                          */
+/* @numberOfPaths - Maximum number of paths to be returned     */
+/***************************************************************/
+CDGPathList* getTopPaths(CDGNode* node, int numberOfPaths);
+
+/*****************************************************************/
+/* deletePathList - Deallocates memory allocated to path list    */
+/* @pathList - a path list                                       */
+/*****************************************************************/
+void deletePathList(CDGPathList* pathList);
+
+#endif
