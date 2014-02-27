@@ -158,6 +158,14 @@ CDGNode* updateScore(CDGNode* node);
 
 CDGNode* updateCDG(CDGNode* node);
 
+/* coverNodes - Sets score of basic blocks which are immediate child on outcome side of
+ *              nodes in the array to 0 .
+ * @root - Root of CDG
+ * @nodes - Array of CDGNodes. Will have id and outcome set
+ * @size - Size of array */
+
+void coverNodes(CDGNode* root, CDGNode* nodes[], int size);
+
 /* deleteCDG - Deletes all the nodes in the CDG
  * @root - Root of CDG */
 
@@ -193,7 +201,5 @@ CDGPath* getTopPaths(CDGNode* node, int numberOfPaths);
  * @path - a path head */
 
 void deletePaths(CDGPath* path);
-
-void postOrder(CDGNode* node, Stack* s);
 
 #endif

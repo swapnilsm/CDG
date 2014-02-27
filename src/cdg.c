@@ -17,7 +17,6 @@ void postOrder(CDGNode* root, Stack* s) {
   Stack* temp = stackNew(sizeof(CDGNode*));;
   CDGNode* node;  
   CDGNode* listNode;
-  //  stackPush(temp, &root);
   pushNodeListToStack(temp, root);
   while(!stackIsEmpty(temp)) {
     stackPop(temp, &node);
@@ -384,6 +383,47 @@ CDGNode* updateCDG(CDGNode* root) {
   return root;
 }
 
+void visitChildren(CDGNode* node, int outcome) {
+  CDGNode* children;
+  if (outcome) {
+    children = getTrueNodeSet(node);
+  } else {
+    children = getFalseNodeSet(node);
+  }
+  while ( children ) {
+    if ( isLeaf(children) ) {
+      setScore(children, 0);
+    }
+    children = getNextNode(children);
+  }
+  return;
+}
+
+void visitIfExists(CDGNode* node, CDGNode* nodes[], int size) {
+  int i;
+  for ( i = 0; i < size; i++ ) {
+    if ( getID(node) == getID(nodes[i]) ) {
+      visitChildren(node, getOutcome(nodes[i]));
+      return;
+    }
+  }
+  return;
+}
+
+void coverNodes(CDGNode* root, CDGNode* nodes[], int size) {
+  assert(NULL != root);
+  if ( 0 == size ) return;
+  Stack* nodeStack = stackNew(sizeof(CDGNode*));
+  CDGNode* node;
+  postOrder(root, nodeStack);
+  while ( !stackIsEmpty(nodeStack) ) {
+    stackPop(nodeStack, &node);
+    visitIfExists(node, nodes, size);
+  }
+  updateCDG(root);
+  return;
+}
+
 CDGPath* setPathNode(CDGPath* path, CDGNode* node) {
   assert(NULL != path);
   path->node = node;
@@ -422,58 +462,6 @@ CDGNode* copyToPathNode(CDGNode* pathNode, CDGNode* node) {
   setOutcome(pathNode, getOutcome(node));
   return pathNode;
 }
-
-/* CDGPath* getTopPathOld(CDGNode* root, CDGNode** lastNode) {
- *   assert(NULL != root);
- *   CDGNode* orgMaxScoreNode = getMaxScoreConditionNode(root);
- * 
- *   if ( NULL == orgMaxScoreNode ) return NULL;
- * 
- *   CDGPath* path = newPath();
- *   CDGNode* node = newBlankNode();
- *   int lastOutcome = 1;
- *   *lastNode = orgMaxScoreNode;
- * 
- *   setPathNode(path, setOutcome(copyToPathNode(node, orgMaxScoreNode), 1));
- *   do {
- *     orgMaxScoreNode = getMaxScoreConditionChildNode(orgMaxScoreNode, &lastOutcome);
- *     if ( orgMaxScoreNode ) {
- *       *lastNode = orgMaxScoreNode;
- *       setNextNode(setOutcome(node, lastOutcome), copyToPathNode(newBlankNode(), orgMaxScoreNode));
- *       node = getNextNode(node);
- *     }
- *   } while (orgMaxScoreNode);
- *   return path;
- * }
- * 
- * CDGPath* getTopPathsOld(CDGNode* root, int numberOfPaths) {
- *   assert(NULL != root);
- *   CDGPath* path = NULL;
- *   CDGPath* currPath = NULL;
- *   CDGNode* lastNode = NULL;
- *   CDGNode* changedNode = NULL;
- *   Stack* visitedNodes = stackNew(sizeof(CDGNode*));
- *   while ( numberOfPaths-- ) {
- *     if ( NULL == path ) {
- *       path = getTopPath(root, &lastNode);
- *       currPath = path;
- *     } else {
- *       setNextPath(currPath, getTopPath(root, &lastNode));
- *       currPath = getNextPath(currPath);
- *     }
- *     if ( NULL == currPath ) break;
- *     changedNode = visitAnyOneChild(lastNode);
- *     stackPush(visitedNodes, &changedNode);
- *     propagateScoreChange(changedNode);
- *   }
- *   while( !stackIsEmpty(visitedNodes) ) {
- *     stackPop(visitedNodes, &changedNode);
- *     unVisitNode(changedNode);
- *     propagateScoreChange(changedNode);
- *   }
- *   stackFree(visitedNodes);
- *   return path;
- * } */
 
 CDGNode* getTopPath(CDGNode* node, Stack* changedNodes) {
   CDGNode* pathNode = newBlankNode();
