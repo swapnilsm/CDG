@@ -199,7 +199,7 @@ CDGNode* newNode(int id, int score, int outcome, const char* expr, CDGNode* true
 }
 
 CDGNode* newBlankNode() {
-  return newNode(0, 0, 1, NULL, NULL, NULL, NULL, NULL);
+  return newNode(-1, 0, 1, NULL, NULL, NULL, NULL, NULL);
 }
 
 void deleteNode(CDGNode* node) {
