@@ -199,7 +199,7 @@ CDGNode* newNode(int id, int score, int outcome, const char* expr, CDGNode* true
 }
 
 CDGNode* newBlankNode() {
-  return newNode(-1, 0, 1, NULL, NULL, NULL, NULL, NULL);
+  return newNode(-1, 1, 1, NULL, NULL, NULL, NULL, NULL);
 }
 
 void deleteNode(CDGNode* node) {
@@ -531,5 +531,25 @@ void deletePaths(CDGPath* path) {
     free(path);
     path = next;
   } while (path);
+}
+
+CDGNode* addDummyNodes(CDGNode* node) {
+  while(node) {
+    if ( !isLeaf(node) ) {
+      if ( NULL == getTrueNodeSet(node)) {
+        addTrueNode(node, newBlankNode());        
+      } else if ( NULL == getFalseNodeSet(node) ) {
+        addFalseNode(node, newBlankNode());
+      }
+    }
+    addDummyNodes(getTrueNodeSet(node));
+    addDummyNodes(getFalseNodeSet(node));    
+    node = getNextNode(node);
+  }
+  return node;
+}
+
+CDGNode* getFeasiblePath(CDGNode* path, CDGNode* nodeList) {
+  return path;
 }
 

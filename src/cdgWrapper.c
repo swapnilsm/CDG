@@ -44,6 +44,7 @@ void preOrderCDG(CDGNode* node) {
     else
       printf("ID: %d, PID: %d", getID(node), getID(getParent(node)));
     preOrderCDG(getTrueNodeSet(node));
-    preOrderCDG(getFalseNodeSet(node));    
+    preOrderCDG(getFalseNodeSet(node));
+    node = getNextNode(node);
   }
 }

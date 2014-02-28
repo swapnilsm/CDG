@@ -36,6 +36,10 @@ CDGNode* newNode(int id, int score, int outcome, const char* expr, CDGNode* true
 
 CDGNode* newBlankNode();
 
+/* addDummyNodes - Attaches dummy nodes to the decision nodes and return the root pointer back
+ * @root - root of the tree */
+
+CDGNode* addDummyNodes(CDGNode* root);
 
 /* deleteNode    - Deallocates the memory allocated to node and its members
  *                 Traverses and recursively deallocates memory allocated to
@@ -196,6 +200,12 @@ CDGPath* getNextPath(CDGPath* path);
  * @numberOfPaths - Maximum number of paths to be returned */
 
 CDGPath* getTopPaths(CDGNode* node, int numberOfPaths);
+
+/* getFeasiblePath - Returns the longest path possible with given conditions satisfied
+ * @path - Path from which the conditions were extracted
+ * @nodeList - List of nodes which were satfisfied (Necessary Params : id, outcome, next ) */
+
+CDGNode* getFeasiblePath(CDGNode* path, CDGNode* nodeList);
 
 /* deletePaths - Deallocates memory allocated to path list
  * @path - a path head */
