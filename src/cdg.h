@@ -207,6 +207,11 @@ CDGPath* getTopPaths(CDGNode* node, int numberOfPaths);
 
 CDGNode* getFeasiblePath(CDGNode* path, CDGNode* nodeList);
 
+/* getPathLength - Returns the number of nodes in the path
+ * @path - Start node of the path */
+
+int getPathLength(CDGNode* path);
+
 /* deletePaths - Deallocates memory allocated to path list
  * @path - a path head */
 

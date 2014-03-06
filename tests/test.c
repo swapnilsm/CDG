@@ -9,6 +9,8 @@ void tTopPath();
 void setup();
 void tearDown();
 void printScores();
+void tFeasiblePath();
+void tPathLength();
 
 int main () {
   setup();
@@ -16,6 +18,8 @@ int main () {
   tUpdateCDG();
   tTopPath();
   tUpdateCDG();
+  tFeasiblePath();
+  tPathLength();
   printf("Hurray... !!! Everything Worked !!!\n");
   return 0;
 }
@@ -144,4 +148,21 @@ void tTopPath() {
     printf("====================================\n");
   }
   deletePaths(path);
+}
+
+void tFeasiblePath() {
+  CDGNode* node= getPathNode(getTopPaths(root, 1));
+  int satList[9] = {1,7,5,16,3,20,22,30,34}, i;
+  CDGNode* listHead = newBlankNode();
+  CDGNode* list = listHead;
+  setID(list, 1);
+  for (i = 1; i < 9; i++) {
+    setNextNode(list, setID(newBlankNode(), satList[i]));
+    list = getNextNode(list);
+  }
+  printPath(getFeasiblePath(node, listHead));
+}
+
+void tPathLength() {
+  assert(15 == getPathLength(getPathNode(getTopPaths(root, 1))));
 }

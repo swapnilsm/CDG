@@ -549,7 +549,40 @@ CDGNode* addDummyNodes(CDGNode* node) {
   return node;
 }
 
-CDGNode* getFeasiblePath(CDGNode* path, CDGNode* nodeList) {
-  return path;
+CDGNode* findNode(CDGNode* node, int id) {
+  if ( NULL == node ) return NULL;
+  if (id == getID(node)) return node;
+  CDGNode* temp = NULL;
+  temp = findNode(getTrueNodeSet(node),id);
+  if ( temp ) return temp;
+  temp = findNode(getFalseNodeSet(node), id);
+  if ( temp ) return temp;
+  return findNode(getNextNode(node), id);
+}
+
+int nodeExists(CDGNode* node, int id) {
+  return NULL != findNode(node, id);
+}
+
+CDGNode* buildFeasiblePath(CDGNode* node, CDGNode* list) {
+  while ( node && 0 == nodeExists(list, getID(node))) {
+    node = getNextNode(node);
+  }
+  if ( NULL == node ) return NULL;
+  CDGNode* out = NULL;  
+  out = copyToPathNode(newBlankNode(), node);
+  setTrueNodeSet(out, buildFeasiblePath(getTrueNodeSet(node), list));
+  setFalseNodeSet(out, buildFeasiblePath(getFalseNodeSet(node), list));
+  setNextNode(out, buildFeasiblePath(getNextNode(node), list));
+  return out;
+}
+
+CDGNode* getFeasiblePath(CDGNode* path, CDGNode* list) {
+  return buildFeasiblePath(path, list);
+}
+
+int getPathLength(CDGNode* node) {
+  if ( NULL == node ) return 0;
+  return 1 + getPathLength(getTrueNodeSet(node)) + getPathLength(getFalseNodeSet(node)) + getPathLength(getNextNode(node));
 }
 
